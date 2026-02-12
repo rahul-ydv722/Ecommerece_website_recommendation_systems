@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="item-detail">
+    <h1>{{ item.name }}</h1>
+    <img src="{{ item.photo.url }}" alt="{{ item.name }}">
+    <p>Price: Rs. {{ item.price }}</p>
+    <p>{{ item.desc }}</p>
+    
+    <div class="add-to-cart">
+        {% if user.is_authenticated %}
+            <button class="btn btn-primary add-to-cart-button" data-item-id="{{ item.id }}">
+                Add to Cart
+            </button>
+        {% else %}
+            <a href="{% url 'login_view' %}" class="btn btn-primary">Login to Purchase</a>
+        {% endif %}
+    </div>
+    
+    <h3>Related Items</h3>
+    <div class="related-items">
+        {% for related in related_items %}
+            <div class="related-item">
+                <a href="{% url 'item_detail' id=related.id %}">
+                    <img src="{{ related.photo.url }}" alt="{{ related.name }}">
+                    <p>{{ related.name }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% load static %}   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Cart</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="icon" href="{% static 'images/fevicon.png' %}" type="image/gif" />
+    <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.min.css' %}">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext" rel="stylesheet">
+</head>
+<style>
+
+    
+    /* Center the cart */
+    .container {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       height: 100vh;
+    }
+    /* Add a margin of 10% on both sides */
+    .cart-panel {
+       margin: 0 10%;
+    }
+    /* Right-align the "Close" button */
+    #close-cart {
+       float: left;
+    }
+ </style>
+</head>
+<body>
+    <br><Br><br>
+  <div id="cart" class="cart-panel">
+      <div class="cart-content">
+          <h2>Your Cart</h2>
+          <button id="close-cart" class="btn btn-secondary">Back</button>
+          <br><br>
+          <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th>Item</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {% for item in cart_items %}
+                    {% if item.status == 'in_cart' %}
+                        <tr>
+                            <td>{{ item.item.name }}</td>
+                            <td>Price: Rs. {{ item.item.price }}</td>
+                            <td>Quantity: {{ item.quantity }}</td>
+                            <td>
+                                <button class="remove-button" data-item-id="{{ item.id }}">Remove</button>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+            
+          </table>
+          <p class="total-bill">Total Bill: Rs. {{ total_bill }}</p>
+          {% if total_bill == 0 %}
+         {%else%}
+              <a href="{% url 'process_order' %}" class="btn btn-primary">Proceed to Checkout</a>
+        {%endif%}
+
+          </form>
+      </div>
+  </div>
+    <!-- ... (Your existing script and other content) ... -->
+    
+    
+    <script>
+        const cart = document.getElementById('cart');
+        const closeCart = document.getElementById('close-cart');
+
+        function closeCartPanel() {
+            cart.style.width = '0';
+            // Redirect to the index page
+            window.location.href = "{% url 'index' %}";
+        }
+
+        // Event listener for closing the cart
+        closeCart.addEventListener('click', closeCartPanel);
+    </script>
+
+    <!-- Add this JavaScript code for removing items from the cart -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            // Handle the "Remove" button click event
+            $(".remove-button").click(function() {
+                const itemId = $(this).data('item-id');
+                // Send a GET request to remove the item from the cart
+                $.get(`/remove_from_cart/${itemId}/`, function(data) {
+                    if (data.message === 'Item removed from the cart.') {
+                        // Item was successfully removed
+                        // You can reload the cart page to refresh the cart
+                        location.reload();
+                    } else {
+                        alert('Item not found in the cart.');
+                    }
+                });
+            });
+        
+            // Other JavaScript code for your cart panel
+        });
+        </script>
+</body>
+</html>
